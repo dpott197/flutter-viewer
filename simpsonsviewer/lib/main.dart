@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 void main() {
   runApp(const MyApp());
@@ -15,7 +17,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Master-Detail Demo'),
+      home: const MyHomePage(title: 'Simpsons Characters'),
     );
   }
 }
@@ -26,15 +28,35 @@ class MyHomePage extends StatefulWidget {
   final String title;
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _selectedItem = 0;
+  Map<String, dynamic> _selectedCharacter = Map<String, dynamic>();
+  List<dynamic> characters = [];
 
-  void _onItemTapped(int index) {
+  @override
+  void initState() {
+    super.initState();
+    _fetchCharacters();
+  }
+
+  Future<void> _fetchCharacters() async {
+    final response = await http.get(Uri.parse('https://api.duckduckgo.com/?q=simpsons+characters&format=json'));
+
+    if (response.statusCode == 200) {
+      setState(() {
+        characters = json.decode(response.body)['RelatedTopics'];
+      });
+    } else {
+      // Handle error
+      print('Failed to load characters');
+    }
+  }
+
+  void _onCharacterTapped(Map<String, dynamic> character) {
     setState(() {
-      _selectedItem = index;
+      _selectedCharacter = character;
     });
   }
 
@@ -51,25 +73,25 @@ class _MyHomePageState extends State<MyHomePage> {
           Container(
             width: 300,
             child: ListView.builder(
-              itemCount: 100,
+              itemCount: characters.length,
               itemBuilder: (context, index) {
+                var character = characters[index];
                 return ListTile(
-                  title: Text('Item $index'),
-                  onTap: () => _onItemTapped(index),
-                  selected: index == _selectedItem,
+                  title: Text(character['Text'].split(' - ')[0]), // Display character name
+                  onTap: () => _onCharacterTapped(character),
                 );
               },
             ),
           ),
 
-          // Detail View
+        // Detail View
           Expanded(
-            child: _selectedItem == null
+            child: _selectedCharacter == null
                 ? Center(
-              child: Text('Please select an item'),
+              child: Text('Please select a character'),
             )
                 : Center(
-              child: Text('Details of Item $_selectedItem'),
+              child: Text(_selectedCharacter['Text'] ?? 'No description'), // Using null-aware operator
             ),
           ),
         ],
