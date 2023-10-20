@@ -91,7 +91,15 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Text('Please select a character'),
             )
                 : Center(
-              child: Text(_selectedCharacter['Text'] ?? 'No description'), // Using null-aware operator
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _selectedCharacter['Icon']['URL'] != null
+                      ? Image.network("https://duckduckgo.com/"+_selectedCharacter['Icon']['URL']) // Displaying the icon
+                      : Container(), // Displaying an empty container if the URL is null
+                  Text(_selectedCharacter['Text'] ?? 'No description'), // Displaying the description
+                ],
+              ),
             ),
           ),
         ],
