@@ -9,7 +9,7 @@ class BaseApp extends StatelessWidget {
   const BaseApp({
     Key? key,
     required this.title,
-    required this.apiUrl
+    required this.apiUrl,
   }) : super(key: key);
 
   @override
@@ -55,52 +55,103 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  void _showDetails(Map character) {
+    Navigator.of(context).push(MaterialPageRoute(
+      builder: (context) => DetailScreen(character: character),
+    ));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.appName), // Set AppBar title to appName
+        title: Text(widget.appName),
       ),
-      body: Row(
-        children: [
-          // Master View
-          Expanded(
-            child: ListView.builder(
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          if (constraints.maxWidth < 600) { // Mobile view
+            return ListView.builder(
               itemCount: _characters.length,
               itemBuilder: (context, index) {
                 return ListTile(
                   title: Text(_characters[index]['Text'].split(' - ')[0]),
                   onTap: () {
-                    setState(() {
-                      _selectedCharacter = _characters[index];
-                    });
+                    _showDetails(_characters[index]);
                   },
                 );
               },
-            ),
-          ),
-          // Detail View
-          Expanded(
-            child: _selectedCharacter == null
-                ? const Center(child: Text('Please select a character'))
-                : Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _selectedCharacter!['Icon']['URL'] != null
-                      ? Image.network("https://duckduckgo.com/" + _selectedCharacter!['Icon']['URL'])
-                      : Container(),
-                  Text(_selectedCharacter!['Text'].split(' - ')[0],
-                      style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-                  Text(_selectedCharacter!['Text'].split(' - ').length > 1
-                      ? _selectedCharacter!['Text'].split(' - ')[1]
-                      : 'No description available'),
-                ],
-              ),
-            ),
-          ),
+            );
+          } else { // Tablet view
+            return Row(
+              children: [
+                // Master View
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: _characters.length,
+                    itemBuilder: (context, index) {
+                      return ListTile(
+                        title: Text(_characters[index]['Text'].split(' - ')[0]),
+                        onTap: () {
+                          setState(() {
+                            _selectedCharacter = _characters[index];
+                          });
+                        },
+                      );
+                    },
+                  ),
+                ),
+                // Detail View
+                Expanded(
+                  child: _selectedCharacter == null
+                      ? const Center(child: Text('Please select a character'))
+                      : DetailView(character: _selectedCharacter!),
+                ),
+              ],
+            );
+          }
+        },
+      ),
+    );
+  }
+}
+
+class DetailView extends StatelessWidget {
+  final Map character;
+
+  const DetailView({Key? key, required this.character}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          character['Icon']['URL'] != null
+              ? Image.network("https://duckduckgo.com/" + character['Icon']['URL'])
+              : Container(),
+          Text(character['Text'].split(' - ')[0],
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+          Text(character['Text'].split(' - ').length > 1
+              ? character['Text'].split(' - ')[1]
+              : 'No description available'),
         ],
       ),
+    );
+  }
+}
+
+class DetailScreen extends StatelessWidget {
+  final Map character;
+
+  const DetailScreen({Key? key, required this.character}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(character['Text'].split(' - ')[0]),
+      ),
+      body: DetailView(character: character),
     );
   }
 }
