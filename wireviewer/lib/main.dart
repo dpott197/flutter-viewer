@@ -1,75 +1,96 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 void main() {
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Master-Detail Demo',
+      title: 'The Wire Characters',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.black),
       ),
-      home: const MyHomePage(title: 'Flutter Master-Detail Demo'),
+      home: const MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
+  const MyHomePage({Key? key}) : super(key: key);
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _selectedItem = 0;
+  List<dynamic> _characters = [];
+  Map? _selectedCharacter;
 
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedItem = index;
-    });
+  @override
+  void initState() {
+    super.initState();
+    _fetchCharacters();
+  }
+
+  Future<void> _fetchCharacters() async {
+    final response = await http.get(Uri.parse('https://api.duckduckgo.com/?q=the+wire+characters&format=json'));
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> result = json.decode(response.body);
+      setState(() {
+        _characters = result['RelatedTopics'];
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
+        title: const Text('The Wire Characters'),
       ),
       body: Row(
         children: [
           // Master View
-          Container(
-            width: 300,
+          Expanded(
             child: ListView.builder(
-              itemCount: 100,
+              itemCount: _characters.length,
               itemBuilder: (context, index) {
                 return ListTile(
-                  title: Text('Item $index'),
-                  onTap: () => _onItemTapped(index),
-                  selected: index == _selectedItem,
+                  title: Text(_characters[index]['Text'].split(' - ')[0]),
+                  onTap: () {
+                    setState(() {
+                      _selectedCharacter = _characters[index];
+                    });
+                  },
                 );
               },
             ),
           ),
-
           // Detail View
           Expanded(
-            child: _selectedItem == null
-                ? Center(
-              child: Text('Please select an item'),
-            )
+            child: _selectedCharacter == null
+                ? const Center(child: Text('Please select a character'))
                 : Center(
-              child: Text('Details of Item $_selectedItem'),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _selectedCharacter!['Icon']['URL'] != null
+                      ? Image.network("https://duckduckgo.com/" + _selectedCharacter!['Icon']['URL'])
+                      : Container(),
+                  Text(_selectedCharacter!['Text'].split(' - ')[0],
+                      style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+                  Text(_selectedCharacter!['Text'].split(' - ').length > 1
+                      ? _selectedCharacter!['Text'].split(' - ')[1]
+                      : 'No description available'),
+                ],
+              ),
             ),
           ),
         ],
