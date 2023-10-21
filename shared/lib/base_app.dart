@@ -125,30 +125,31 @@ class DetailView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(16.0), // Adjust the padding as you like
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            character['Icon']['URL'] != null
-                ? ClipOval(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center, // Center the content horizontally
+        children: [
+          character['Icon']['URL'] != null
+              ? Center( // Center the ClipOval widget
+            child: ClipOval(
               child: Image.network(
                 "https://duckduckgo.com/" + character['Icon']['URL'],
-                width: 100, // you can adjust the width as you like
-                height: 100, // you can adjust the height as you like
+                width: 100,
+                height: 100,
                 fit: BoxFit.cover,
               ),
-            )
-                : Container(),
-            SizedBox(height: 16), // Add space between the image and text
-            Text(character['Text'].split(' - ')[0],
-                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-            SizedBox(height: 8), // Add space between the text elements
-            Text(character['Text'].split(' - ').length > 1
-                ? character['Text'].split(' - ')[1]
-                : 'No description available'),
-          ],
-        ),
+            ),
+          )
+              : Container(),
+          SizedBox(height: 16),
+          Text(character['Text'].split(' - ')[0],
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+          SizedBox(height: 8),
+          Text(character['Text'].split(' - ').length > 1
+              ? character['Text'].split(' - ')[1]
+              : 'No description available'),
+        ],
       ),
     );
   }
