@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared/shared.dart';
 
 class BaseApp extends StatelessWidget {
   final String title;
@@ -36,7 +37,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   List<dynamic> _characters = [];
-  Map? _selectedCharacter;
+  Character? _selectedCharacter;
 
   @override
   void initState() {
@@ -44,18 +45,19 @@ class _MyHomePageState extends State<MyHomePage> {
     _fetchCharacters();
   }
 
+  // In your _fetchCharacters() method in the _MyHomePageState class
   Future<void> _fetchCharacters() async {
     final response = await http.get(Uri.parse(widget.apiUrl));
 
     if (response.statusCode == 200) {
-      final Map<String, dynamic> result = json.decode(response.body);
+      final List<dynamic> result = json.decode(response.body)['RelatedTopics'];
       setState(() {
-        _characters = result['RelatedTopics'];
+        _characters = result.map((characterJson) => Character.fromJson(characterJson)).toList();
       });
     }
   }
 
-  void _showDetails(Map character) {
+  void _showDetails(Character character) {
     Navigator.of(context).push(MaterialPageRoute(
       builder: (context) => DetailScreen(character: character),
     ));
@@ -69,13 +71,14 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: LayoutBuilder(
         builder: (context, constraints) {
-          if (constraints.maxWidth < 600) { // Mobile view
+          final deviceType = DeviceType();
+          if (constraints.maxWidth < 600) { // Handset view
             return ListView.separated(
               itemCount: _characters.length,
               separatorBuilder: (BuildContext context, int index) => const Divider(),
               itemBuilder: (context, index) {
                 return ListTile(
-                  title: Text(_characters[index]['Text'].split(' - ')[0]),
+                  title: Text(_characters[index].name),
                   onTap: () {
                     _showDetails(_characters[index]);
                   },
@@ -92,7 +95,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     separatorBuilder: (BuildContext context, int index) => const Divider(),
                     itemBuilder: (context, index) {
                       return ListTile(
-                        title: Text(_characters[index]['Text'].split(' - ')[0]),
+                        title: Text(_characters[index].name),
                         onTap: () {
                           setState(() {
                             _selectedCharacter = _characters[index];
@@ -118,7 +121,7 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 
 class DetailView extends StatelessWidget {
-  final Map character;
+  final Character character;
 
   const DetailView({Key? key, required this.character}) : super(key: key);
 
@@ -130,11 +133,11 @@ class DetailView extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center, // Center the content horizontally
         children: [
-          character['Icon']['URL'] != null
+          character.iconUrl != null
               ? Center( // Center the ClipOval widget
             child: ClipOval(
               child: Image.network(
-                "https://duckduckgo.com/" + character['Icon']['URL'],
+                character.iconUrl,
                 width: 100,
                 height: 100,
                 fit: BoxFit.cover,
@@ -143,12 +146,10 @@ class DetailView extends StatelessWidget {
           )
               : Container(),
           SizedBox(height: 16),
-          Text(character['Text'].split(' - ')[0],
+          Text(character.name,
               style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
           SizedBox(height: 8),
-          Text(character['Text'].split(' - ').length > 1
-              ? character['Text'].split(' - ')[1]
-              : 'No description available'),
+          Text(character.description),
         ],
       ),
     );
@@ -156,7 +157,7 @@ class DetailView extends StatelessWidget {
 }
 
 class DetailScreen extends StatelessWidget {
-  final Map character;
+  final Character character;
 
   const DetailScreen({Key? key, required this.character}) : super(key: key);
 
@@ -164,9 +165,31 @@ class DetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(character['Text'].split(' - ')[0]),
+        title: Text(character.name),
       ),
       body: DetailView(character: character),
     );
+  }
+}
+
+class Character {
+  final String name;
+  final String description;
+  final String iconUrl;
+
+  Character({
+    required this.name,
+    required this.description,
+    required this.iconUrl
+  });
+
+  factory Character.fromJson(Map<String, dynamic> json) {
+    String name = json['Text'].split(' - ')[0];
+    String description = json['Text'].split(' - ').length > 1
+        ? json['Text'].split(' - ')[1]
+        : 'No description available';
+    String iconUrl = "https://duckduckgo.com/" + (json['Icon']['URL'] ?? '');
+
+    return Character(name: name, description: description, iconUrl: iconUrl);
   }
 }
