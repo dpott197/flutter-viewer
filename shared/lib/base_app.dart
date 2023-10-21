@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:shared/shared.dart';
+import 'package:shared/device_type.dart';
 
 class BaseApp extends StatelessWidget {
   final String title;
@@ -72,7 +72,7 @@ class _MyHomePageState extends State<MyHomePage> {
       body: LayoutBuilder(
         builder: (context, constraints) {
           final deviceType = DeviceType();
-          if (constraints.maxWidth < 600) { // Handset view
+          if (DeviceType.isHandset(constraints.maxWidth)) { // Handset view
             return ListView.separated(
               itemCount: _characters.length,
               separatorBuilder: (BuildContext context, int index) => const Divider(),

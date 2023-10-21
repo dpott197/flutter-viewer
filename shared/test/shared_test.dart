@@ -1,12 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:shared/shared.dart';
+import 'package:shared/device_type.dart';
 
 void main() {
   test('adds one to input values', () {
-    final calculator = Calculator();
-    expect(calculator.addOne(2), 3);
-    expect(calculator.addOne(-7), -6);
-    expect(calculator.addOne(0), 1);
+    expect(DeviceType.isHandset(601), false);
+    expect(DeviceType.isHandset(600), false);
+    expect(DeviceType.isHandset(599), true);
   });
 }
