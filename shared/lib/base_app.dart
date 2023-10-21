@@ -70,8 +70,9 @@ class _MyHomePageState extends State<MyHomePage> {
       body: LayoutBuilder(
         builder: (context, constraints) {
           if (constraints.maxWidth < 600) { // Mobile view
-            return ListView.builder(
+            return ListView.separated(
               itemCount: _characters.length,
+              separatorBuilder: (BuildContext context, int index) => const Divider(),
               itemBuilder: (context, index) {
                 return ListTile(
                   title: Text(_characters[index]['Text'].split(' - ')[0]),
@@ -86,8 +87,9 @@ class _MyHomePageState extends State<MyHomePage> {
               children: [
                 // Master View
                 Expanded(
-                  child: ListView.builder(
+                  child: ListView.separated(
                     itemCount: _characters.length,
+                    separatorBuilder: (BuildContext context, int index) => const Divider(),
                     itemBuilder: (context, index) {
                       return ListTile(
                         title: Text(_characters[index]['Text'].split(' - ')[0]),
