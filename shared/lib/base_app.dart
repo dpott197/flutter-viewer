@@ -129,7 +129,14 @@ class DetailView extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           character['Icon']['URL'] != null
-              ? Image.network("https://duckduckgo.com/" + character['Icon']['URL'])
+              ? ClipOval(
+            child: Image.network(
+              "https://duckduckgo.com/" + character['Icon']['URL'],
+              width: 100, // you can adjust the width as you like
+              height: 100, // you can adjust the height as you like
+              fit: BoxFit.cover,
+            ),
+          )
               : Container(),
           Text(character['Text'].split(' - ')[0],
               style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
