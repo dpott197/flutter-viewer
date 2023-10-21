@@ -7,33 +7,30 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Master-Detail Demo',
+      title: 'The Simpsons Characters',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(seedColor: Color(0xFFFFD966)),
       ),
-      home: const MyHomePage(title: 'Simpsons Characters'),
+      home: const MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
+  const MyHomePage({Key? key}) : super(key: key);
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  Map<String, dynamic> _selectedCharacter = Map<String, dynamic>();
-  List<dynamic> characters = [];
+  List<dynamic> _characters = [];
+  Map? _selectedCharacter;
 
   @override
   void initState() {
@@ -45,59 +42,53 @@ class _MyHomePageState extends State<MyHomePage> {
     final response = await http.get(Uri.parse('https://api.duckduckgo.com/?q=simpsons+characters&format=json'));
 
     if (response.statusCode == 200) {
+      final Map<String, dynamic> result = json.decode(response.body);
       setState(() {
-        characters = json.decode(response.body)['RelatedTopics'];
+        _characters = result['RelatedTopics'];
       });
-    } else {
-      // Handle error
-      print('Failed to load characters');
     }
-  }
-
-  void _onCharacterTapped(Map<String, dynamic> character) {
-    setState(() {
-      _selectedCharacter = character;
-    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
+        title: const Text('Simpsons Characters'),
       ),
       body: Row(
         children: [
           // Master View
-          Container(
-            width: 300,
+          Expanded(
             child: ListView.builder(
-              itemCount: characters.length,
+              itemCount: _characters.length,
               itemBuilder: (context, index) {
-                var character = characters[index];
                 return ListTile(
-                  title: Text(character['Text'].split(' - ')[0]), // Display character name
-                  onTap: () => _onCharacterTapped(character),
+                  title: Text(_characters[index]['Text'].split(' - ')[0]),
+                  onTap: () {
+                    setState(() {
+                      _selectedCharacter = _characters[index];
+                    });
+                  },
                 );
               },
             ),
           ),
-
-        // Detail View
+          // Detail View
           Expanded(
             child: _selectedCharacter == null
-                ? Center(
-              child: Text('Please select a character'),
-            )
+                ? const Center(child: Text('Please select a character'))
                 : Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  _selectedCharacter['Icon']['URL'] != null
-                      ? Image.network("https://duckduckgo.com/"+_selectedCharacter['Icon']['URL']) // Displaying the icon
-                      : Container(), // Displaying an empty container if the URL is null
-                  Text(_selectedCharacter['Text'] ?? 'No description'), // Displaying the description
+                  _selectedCharacter!['Icon']['URL'] != null
+                      ? Image.network("https://duckduckgo.com/" + _selectedCharacter!['Icon']['URL'])
+                      : Container(),
+                  Text(_selectedCharacter!['Text'].split(' - ')[0],
+                      style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+                  Text(_selectedCharacter!['Text'].split(' - ').length > 1
+                      ? _selectedCharacter!['Text'].split(' - ')[1]
+                      : 'No description available'),
                 ],
               ),
             ),
