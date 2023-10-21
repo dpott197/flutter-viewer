@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:shared/device_type.dart';
 
 class BaseApp extends StatelessWidget {
   final String title;
@@ -18,7 +17,7 @@ class BaseApp extends StatelessWidget {
     return MaterialApp(
       title: title,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Color(0xFFFFD966)),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.black),
       ),
       home: MyHomePage(appName: title, apiUrl: apiUrl),
     );
@@ -36,8 +35,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  List<dynamic> _characters = [];
-  Character? _selectedCharacter;
+  List<Character> _characters = [];
+  TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
@@ -45,10 +44,8 @@ class _MyHomePageState extends State<MyHomePage> {
     _fetchCharacters();
   }
 
-  // In your _fetchCharacters() method in the _MyHomePageState class
   Future<void> _fetchCharacters() async {
     final response = await http.get(Uri.parse(widget.apiUrl));
-
     if (response.statusCode == 200) {
       final List<dynamic> result = json.decode(response.body)['RelatedTopics'];
       setState(() {
@@ -65,56 +62,41 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    var filteredCharacters = _characters.where((character) {
+      return character.name.toLowerCase().contains(_searchController.text.toLowerCase());
+    }).toList();
+
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.appName),
       ),
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          final deviceType = DeviceType();
-          if (DeviceType.isHandset(constraints.maxWidth)) { // Handset view
-            return ListView.separated(
-              itemCount: _characters.length,
-              separatorBuilder: (BuildContext context, int index) => const Divider(),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                labelText: 'Search',
+                border: OutlineInputBorder(),
+              ),
+              onChanged: (value) {
+                setState(() {});
+              },
+            ),
+          ),
+          Expanded(
+            child: ListView.builder(
+              itemCount: filteredCharacters.length,
               itemBuilder: (context, index) {
                 return ListTile(
-                  title: Text(_characters[index].name),
-                  onTap: () {
-                    _showDetails(_characters[index]);
-                  },
+                  title: Text(filteredCharacters[index].name),
+                  onTap: () => _showDetails(filteredCharacters[index]),
                 );
               },
-            );
-          } else { // Tablet view
-            return Row(
-              children: [
-                // Master View
-                Expanded(
-                  child: ListView.separated(
-                    itemCount: _characters.length,
-                    separatorBuilder: (BuildContext context, int index) => const Divider(),
-                    itemBuilder: (context, index) {
-                      return ListTile(
-                        title: Text(_characters[index].name),
-                        onTap: () {
-                          setState(() {
-                            _selectedCharacter = _characters[index];
-                          });
-                        },
-                      );
-                    },
-                  ),
-                ),
-                // Detail View
-                Expanded(
-                  child: _selectedCharacter == null
-                      ? const Center(child: Text('Please select a character'))
-                      : DetailView(character: _selectedCharacter!),
-                ),
-              ],
-            );
-          }
-        },
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -130,25 +112,21 @@ class DetailView extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.center, // Center the content horizontally
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           character.iconUrl != null
-              ? Center( // Center the ClipOval widget
-            child: ClipOval(
-              child: Image.network(
-                character.iconUrl,
-                width: 100,
-                height: 100,
-                fit: BoxFit.cover,
-              ),
+              ? ClipOval(
+            child: Image.network(
+              character.iconUrl!,
+              width: 100,
+              height: 100,
+              fit: BoxFit.cover,
             ),
           )
               : Container(),
-          SizedBox(height: 16),
-          Text(character.name,
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-          SizedBox(height: 8),
+          SizedBox(height: 20),
+          Text(character.name, style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+          SizedBox(height: 20),
           Text(character.description),
         ],
       ),
@@ -175,12 +153,12 @@ class DetailScreen extends StatelessWidget {
 class Character {
   final String name;
   final String description;
-  final String iconUrl;
+  final String? iconUrl;
 
   Character({
     required this.name,
     required this.description,
-    required this.iconUrl
+    this.iconUrl,
   });
 
   factory Character.fromJson(Map<String, dynamic> json) {
@@ -189,7 +167,6 @@ class Character {
         ? json['Text'].split(' - ')[1]
         : 'No description available';
     String iconUrl = "https://duckduckgo.com/" + (json['Icon']['URL'] ?? '');
-
     return Character(name: name, description: description, iconUrl: iconUrl);
   }
 }
