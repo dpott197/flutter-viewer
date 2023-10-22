@@ -19,16 +19,17 @@ class BaseApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.black),
       ),
-      home: MyHomePage(appName: title, apiUrl: apiUrl),
+      home: MyHomePage(title: title, apiUrl: apiUrl),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  final String appName;
+  final String title;
   final String apiUrl;
 
-  const MyHomePage({Key? key, required this.appName, required this.apiUrl}) : super(key: key);
+  const MyHomePage({Key? key, required this.title, required this.apiUrl})
+      : super(key: key);
 
   @override
   // ignore: library_private_types_in_public_api
@@ -51,7 +52,9 @@ class _MyHomePageState extends State<MyHomePage> {
     if (response.statusCode == 200) {
       final List<dynamic> result = json.decode(response.body)['RelatedTopics'];
       setState(() {
-        _characters = result.map((characterJson) => Character.fromJson(characterJson)).toList();
+        _characters = result
+            .map((characterJson) => Character.fromJson(characterJson))
+            .toList();
       });
     }
   }
@@ -65,12 +68,14 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     var filteredCharacters = _characters.where((character) {
-      return character.name.toLowerCase().contains(_searchController.text.toLowerCase());
+      return character.name
+          .toLowerCase()
+          .contains(_searchController.text.toLowerCase());
     }).toList();
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.appName),
+        title: Text(widget.title),
       ),
       body: LayoutBuilder(
         builder: (context, constraints) {
@@ -100,7 +105,8 @@ class _MyHomePageState extends State<MyHomePage> {
                         onTap: () {
                           Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (context) => DetailScreen(character: filteredCharacters[index]),
+                              builder: (context) => DetailScreen(
+                                  character: filteredCharacters[index]),
                             ),
                           );
                         },
@@ -138,8 +144,8 @@ class _MyHomePageState extends State<MyHomePage> {
                             var character = filteredCharacters[index];
                             return ListTile(
                               tileColor: _selectedCharacter == character
-                                  ? Colors.blue.shade100  // Color when selected
-                                  : null,  // Default color when not selected
+                                  ? Colors.blue.shade100 // Color when selected
+                                  : null, // Default color when not selected
                               title: Text(character.name),
                               onTap: () => _showDetails(character),
                             );
@@ -152,7 +158,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 Expanded(
                   flex: 2,
                   child: _selectedCharacter == null
-                      ? const Center(child: Text('Select a character to view details.'))
+                      ? const Center(
+                          child: Text('Select a character to view details.'))
                       : DetailView(character: _selectedCharacter!),
                 ),
               ],
@@ -199,7 +206,8 @@ class DetailView extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(character.name,
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+              style:
+                  const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
           Text(character.description),
         ],
@@ -221,7 +229,6 @@ class DetailView extends StatelessWidget {
     return initials;
   }
 }
-
 
 class DetailScreen extends StatelessWidget {
   final Character character;
