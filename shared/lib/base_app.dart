@@ -37,6 +37,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   List<Character> _characters = [];
   TextEditingController _searchController = TextEditingController();
+  Character? _selectedCharacter;
 
   @override
   void initState() {
@@ -55,9 +56,9 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _showDetails(Character character) {
-    Navigator.of(context).push(MaterialPageRoute(
-      builder: (context) => DetailScreen(character: character),
-    ));
+    setState(() {
+      _selectedCharacter = character;
+    });
   }
 
   @override
@@ -70,33 +71,89 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text(widget.appName),
       ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              controller: _searchController,
-              decoration: InputDecoration(
-                labelText: 'Search',
-                border: OutlineInputBorder(),
-              ),
-              onChanged: (value) {
-                setState(() {});
-              },
-            ),
-          ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: filteredCharacters.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(filteredCharacters[index].name),
-                  onTap: () => _showDetails(filteredCharacters[index]),
-                );
-              },
-            ),
-          ),
-        ],
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          if (constraints.maxWidth < 600) {
+            // Phone layout
+            return Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextField(
+                    controller: _searchController,
+                    decoration: InputDecoration(
+                      labelText: 'Search',
+                      border: OutlineInputBorder(),
+                    ),
+                    onChanged: (value) {
+                      setState(() {});
+                    },
+                  ),
+                ),
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: filteredCharacters.length,
+                    itemBuilder: (context, index) {
+                      return ListTile(
+                        title: Text(filteredCharacters[index].name),
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => DetailScreen(character: filteredCharacters[index]),
+                            ),
+                          );
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ],
+            );
+          } else {
+            // Tablet layout
+            return Row(
+              children: [
+                Expanded(
+                  flex: 1,
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: TextField(
+                          controller: _searchController,
+                          decoration: InputDecoration(
+                            labelText: 'Search',
+                            border: OutlineInputBorder(),
+                          ),
+                          onChanged: (value) {
+                            setState(() {});
+                          },
+                        ),
+                      ),
+                      Expanded(
+                        child: ListView.builder(
+                          itemCount: filteredCharacters.length,
+                          itemBuilder: (context, index) {
+                            return ListTile(
+                              title: Text(filteredCharacters[index].name),
+                              onTap: () => _showDetails(filteredCharacters[index]),
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  flex: 2,
+                  child: _selectedCharacter == null
+                      ? Center(child: Text('Select a character to view details.'))
+                      : DetailView(character: _selectedCharacter!),
+                ),
+              ],
+            );
+          }
+        },
       ),
     );
   }
@@ -188,6 +245,7 @@ class Character {
     this.iconUrl,
   });
 
+  // TODO: Better error handling
   factory Character.fromJson(Map<String, dynamic> json) {
     String name = json['Text'].split(' - ')[0];
     String description = json['Text'].split(' - ').length > 1
