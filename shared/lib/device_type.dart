@@ -2,7 +2,5 @@ library shared;
 
 
 class DeviceType {
-  static bool isHandset(double value) {
-    return value < 600;
-  }
+  static bool isHandset(double value) => value < 600;
 }
