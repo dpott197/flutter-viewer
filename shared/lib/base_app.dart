@@ -97,8 +97,14 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 ),
                 Expanded(
-                  child: ListView.builder(
+                  child: ListView.separated(
                     itemCount: filteredCharacters.length,
+                    separatorBuilder: (BuildContext context, int index) {
+                      return const Divider(
+                          indent: 16,
+                          endIndent: 16,
+                      ); // You can customize the Divider's appearance if you want
+                    },
                     itemBuilder: (context, index) {
                       return ListTile(
                         title: Text(filteredCharacters[index].name),
@@ -138,8 +144,14 @@ class _MyHomePageState extends State<MyHomePage> {
                         ),
                       ),
                       Expanded(
-                        child: ListView.builder(
+                        child: ListView.separated(
                           itemCount: filteredCharacters.length,
+                          separatorBuilder: (BuildContext context, int index) {
+                            return const Divider(
+                                indent: 16,
+                                endIndent: 16,
+                            ); // You can customize the Divider's appearance if you want
+                          },
                           itemBuilder: (context, index) {
                             var character = filteredCharacters[index];
                             return ListTile(
