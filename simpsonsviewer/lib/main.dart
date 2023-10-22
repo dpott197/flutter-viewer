@@ -7,8 +7,10 @@ void main() {
 }
 
 class SimpsonsApp extends BaseApp {
-  const SimpsonsApp({super.key}) : super(
-    title: 'The Simpsons Character Viewer',
-    apiUrl: 'https://api.duckduckgo.com/?q=simpsons+characters&format=json',
-  );
+  const SimpsonsApp({super.key})
+      : super(
+          title: 'The Simpsons',
+          apiUrl:
+              'https://api.duckduckgo.com/?q=simpsons+characters&format=json',
+        );
 }

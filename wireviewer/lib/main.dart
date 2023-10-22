@@ -7,8 +7,10 @@ void main() {
 }
 
 class WireApp extends BaseApp {
-  const WireApp({super.key}) : super(
-    title: 'The Wire Character Viewer',
-    apiUrl: 'https://api.duckduckgo.com/?q=the+wire+characters&format=json',
-  );
+  const WireApp({super.key})
+      : super(
+          title: 'The Wire',
+          apiUrl:
+              'https://api.duckduckgo.com/?q=the+wire+characters&format=json',
+        );
 }
