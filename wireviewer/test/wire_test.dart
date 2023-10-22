@@ -12,7 +12,7 @@ import 'package:wireviewer/main.dart';
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(WireApp());
+    await tester.pumpWidget(const WireApp());
 
     // Verify title set correctly
     expect(find.text('The Wire Character Viewer'), findsOneWidget);

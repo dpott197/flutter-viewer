@@ -31,12 +31,13 @@ class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key, required this.appName, required this.apiUrl}) : super(key: key);
 
   @override
+  // ignore: library_private_types_in_public_api
   _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
   List<Character> _characters = [];
-  TextEditingController _searchController = TextEditingController();
+  final TextEditingController _searchController = TextEditingController();
   Character? _selectedCharacter;
 
   @override
@@ -81,7 +82,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   padding: const EdgeInsets.all(8.0),
                   child: TextField(
                     controller: _searchController,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       labelText: 'Search',
                       border: OutlineInputBorder(),
                     ),
@@ -121,7 +122,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         padding: const EdgeInsets.all(8.0),
                         child: TextField(
                           controller: _searchController,
-                          decoration: InputDecoration(
+                          decoration: const InputDecoration(
                             labelText: 'Search',
                             border: OutlineInputBorder(),
                           ),
@@ -151,7 +152,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 Expanded(
                   flex: 2,
                   child: _selectedCharacter == null
-                      ? Center(child: Text('Select a character to view details.'))
+                      ? const Center(child: Text('Select a character to view details.'))
                       : DetailView(character: _selectedCharacter!),
                 ),
               ],
@@ -189,17 +190,17 @@ class DetailView extends StatelessWidget {
                     radius: 50,
                     child: Text(
                       _getInitials(character.name),
-                      style: TextStyle(color: Colors.white, fontSize: 40),
+                      style: const TextStyle(color: Colors.white, fontSize: 40),
                     ),
                   );
                 },
               ),
             ),
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           Text(character.name,
               style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           Text(character.description),
         ],
       ),
@@ -255,7 +256,7 @@ class Character {
     String description = json['Text'].split(' - ').length > 1
         ? json['Text'].split(' - ')[1]
         : 'No description available';
-    String iconUrl = "https://duckduckgo.com/" + (json['Icon']['URL'] ?? '');
+    String iconUrl = "https://duckduckgo.com/${json['Icon']['URL'] ?? ''}";
     return Character(name: name, description: description, iconUrl: iconUrl);
   }
 }

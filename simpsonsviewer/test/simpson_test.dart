@@ -12,7 +12,7 @@ import 'package:simpsonsviewer/main.dart';
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(SimpsonsApp());
+    await tester.pumpWidget(const SimpsonsApp());
 
     // Verify title set correctly
     expect(find.text('The Simpsons Character Viewer'), findsOneWidget);
