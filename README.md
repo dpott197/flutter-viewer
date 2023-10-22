@@ -2,10 +2,13 @@
 
 DuckDuckGo API Character Viewer
 
-# Setup
+# Templates Used
 
-```
-flutter create --template=package shared
-flutter create simpsonsviewer
 flutter create wireviewer
-```
+flutter create simpsonsviewer
+flutter create --template=package shared
+
+# Other Sources
+
+https://chat.openai.com/
+
