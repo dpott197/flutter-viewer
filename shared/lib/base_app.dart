@@ -134,9 +134,13 @@ class _MyHomePageState extends State<MyHomePage> {
                         child: ListView.builder(
                           itemCount: filteredCharacters.length,
                           itemBuilder: (context, index) {
+                            var character = filteredCharacters[index];
                             return ListTile(
-                              title: Text(filteredCharacters[index].name),
-                              onTap: () => _showDetails(filteredCharacters[index]),
+                              tileColor: _selectedCharacter == character
+                                  ? Colors.blue.shade100  // Color when selected
+                                  : null,  // Default color when not selected
+                              title: Text(character.name),
+                              onTap: () => _showDetails(character),
                             );
                           },
                         ),
