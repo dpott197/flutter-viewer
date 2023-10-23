@@ -19,24 +19,24 @@ class BaseApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.black),
       ),
-      home: MyHomePage(title: title, apiUrl: apiUrl),
+      home: BaseHomePage(title: title, apiUrl: apiUrl),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
+class BaseHomePage extends StatefulWidget {
   final String title;
   final String apiUrl;
 
-  const MyHomePage({Key? key, required this.title, required this.apiUrl})
+  const BaseHomePage({Key? key, required this.title, required this.apiUrl})
       : super(key: key);
 
   @override
   // ignore: library_private_types_in_public_api
-  _MyHomePageState createState() => _MyHomePageState();
+  _BaseHomePageState createState() => _BaseHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _BaseHomePageState extends State<BaseHomePage> {
   List<Character> _characters = [];
   final TextEditingController _searchController = TextEditingController();
   Character? _selectedCharacter;
@@ -101,8 +101,8 @@ class _MyHomePageState extends State<MyHomePage> {
                     itemCount: filteredCharacters.length,
                     separatorBuilder: (BuildContext context, int index) {
                       return const Divider(
-                          indent: 16,
-                          endIndent: 16,
+                        indent: 16,
+                        endIndent: 16,
                       ); // You can customize the Divider's appearance if you want
                     },
                     itemBuilder: (context, index) {
@@ -148,8 +148,8 @@ class _MyHomePageState extends State<MyHomePage> {
                           itemCount: filteredCharacters.length,
                           separatorBuilder: (BuildContext context, int index) {
                             return const Divider(
-                                indent: 16,
-                                endIndent: 16,
+                              indent: 16,
+                              endIndent: 16,
                             ); // You can customize the Divider's appearance if you want
                           },
                           itemBuilder: (context, index) {
