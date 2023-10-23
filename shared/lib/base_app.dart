@@ -179,6 +179,13 @@ class _BaseHomePageState extends State<BaseHomePage> {
                     ],
                   ),
                 ),
+                const VerticalDivider(
+                  indent: 16.0,
+                  endIndent: 16.0,
+                  color: Colors.grey, // Customize color as needed
+                  thickness: 0.25,       // Customize thickness as needed
+                  width: 0.25,           // Customize width as needed
+                ),
                 Expanded(
                   flex: 2,
                   child: _selectedCharacter == null
