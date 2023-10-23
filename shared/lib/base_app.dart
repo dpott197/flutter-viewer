@@ -2,6 +2,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+import 'character.dart';
+import 'device_type.dart';
+
 class BaseApp extends StatelessWidget {
   final String title;
   final String apiUrl;
@@ -209,40 +212,46 @@ class DetailView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Center(
-            child: ClipOval(
-              child: Image.network(
-                character.iconUrl ?? '', // FIXME
-                width: 100,
-                height: 100,
-                fit: BoxFit.cover,
-                alignment: Alignment.topCenter,
-                errorBuilder: (context, error, stackTrace) {
-                  return CircleAvatar(
-                    backgroundColor: Colors.grey,
-                    radius: 50,
-                    child: Text(
-                      _getInitials(character.name),
-                      style: const TextStyle(color: Colors.white, fontSize: 40),
-                    ),
-                  );
-                },
+    return Center(
+      child: Container(
+        constraints: const BoxConstraints(minWidth: 100.0, maxWidth: 600.0),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Center(
+                child: ClipOval(
+                  child: Image.network(
+                    character.iconUrl ?? '', // FIXME
+                    width: 100,
+                    height: 100,
+                    fit: BoxFit.cover,
+                    alignment: Alignment.topCenter,
+                    errorBuilder: (context, error, stackTrace) {
+                      return CircleAvatar(
+                        backgroundColor: Colors.grey,
+                        radius: 50,
+                        child: Text(
+                          _getInitials(character.name),
+                          style: const TextStyle(
+                              color: Colors.white, fontSize: 40),
+                        ),
+                      );
+                    },
+                  ),
+                ),
               ),
-            ),
+              const SizedBox(height: 16),
+              Text(character.name,
+                  style: const TextStyle(
+                      fontSize: 24, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 8),
+              Text(character.description),
+            ],
           ),
-          const SizedBox(height: 16),
-          Text(character.name,
-              style:
-                  const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 8),
-          Text(character.description),
-        ],
+        ),
       ),
     );
   }
@@ -276,30 +285,4 @@ class DetailScreen extends StatelessWidget {
       body: DetailView(character: character),
     );
   }
-}
-
-class Character {
-  final String name;
-  final String description;
-  final String? iconUrl;
-
-  Character({
-    required this.name,
-    required this.description,
-    this.iconUrl,
-  });
-
-  // TODO: Better error handling
-  factory Character.fromJson(Map<String, dynamic> json) {
-    String name = json['Text'].split(' - ')[0];
-    String description = json['Text'].split(' - ').length > 1
-        ? json['Text'].split(' - ')[1]
-        : 'No description available';
-    String iconUrl = "https://duckduckgo.com/${json['Icon']['URL'] ?? ''}";
-    return Character(name: name, description: description, iconUrl: iconUrl);
-  }
-}
-
-class DeviceType {
-  static bool isHandset(double value) => value < 600;
 }
