@@ -17,8 +17,16 @@ class BaseApp extends StatelessWidget {
     return MaterialApp(
       title: title,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.black),
+        // Define your light theme here
+        brightness: Brightness.light,
+        primarySwatch: Colors.blue,
       ),
+      darkTheme: ThemeData(
+        // Define your dark theme here
+        brightness: Brightness.dark,
+        primarySwatch: Colors.blue,
+      ),
+      themeMode: ThemeMode.system, // Automatically use the system theme mode
       home: BaseHomePage(title: title, apiUrl: apiUrl),
     );
   }
@@ -156,7 +164,11 @@ class _BaseHomePageState extends State<BaseHomePage> {
                             var character = filteredCharacters[index];
                             return ListTile(
                               tileColor: _selectedCharacter == character
-                                  ? Colors.blue.shade100 // Color when selected
+                                  ? (Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? Colors.blue.shade900
+                                      : Colors.blue.shade100
+                                    ) // Color when selected
                                   : null, // Default color when not selected
                               title: Text(character.name),
                               onTap: () => _showDetails(character),
