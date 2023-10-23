@@ -92,7 +92,7 @@ class _BaseHomePageState extends State<BaseHomePage> {
       ),
       body: LayoutBuilder(
         builder: (context, constraints) {
-          if (DeviceType.isHandset(constraints.maxWidth)) {
+          if (!DeviceType.isTablet(context)) {
             // Phone layout
             return Column(
               children: [
