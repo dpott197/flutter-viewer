@@ -79,7 +79,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: LayoutBuilder(
         builder: (context, constraints) {
-          if (constraints.maxWidth < 600) {
+          if (DeviceType.isHandset(constraints.maxWidth)) {
             // Phone layout
             return Column(
               children: [
@@ -278,4 +278,8 @@ class Character {
     String iconUrl = "https://duckduckgo.com/${json['Icon']['URL'] ?? ''}";
     return Character(name: name, description: description, iconUrl: iconUrl);
   }
+}
+
+class DeviceType {
+  static bool isHandset(double value) => value < 600;
 }

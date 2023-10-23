@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared/base_app.dart';
 
-import 'package:shared/device_type.dart';
 
 void main() {
   test('adds one to input values', () {
