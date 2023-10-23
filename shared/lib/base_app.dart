@@ -203,6 +203,7 @@ class DetailView extends StatelessWidget {
                 width: 100,
                 height: 100,
                 fit: BoxFit.cover,
+                alignment: Alignment.topCenter,
                 errorBuilder: (context, error, stackTrace) {
                   return CircleAvatar(
                     backgroundColor: Colors.grey,
