@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared/custom_divider.dart';
 
 import 'character.dart';
 import 'detail_screen.dart';
@@ -83,10 +84,7 @@ class _BaseHomePageState extends State<BaseHomePage> {
                   child: ListView.separated(
                     itemCount: filteredCharacters.length,
                     separatorBuilder: (BuildContext context, int index) {
-                      return const Divider(
-                        indent: 16,
-                        endIndent: 16,
-                      ); // You can customize the Divider's appearance if you want
+                      return const CustomDivider();
                     },
                     itemBuilder: (context, index) {
                       return ListTile(
@@ -130,10 +128,7 @@ class _BaseHomePageState extends State<BaseHomePage> {
                         child: ListView.separated(
                           itemCount: filteredCharacters.length,
                           separatorBuilder: (BuildContext context, int index) {
-                            return const Divider(
-                              indent: 16,
-                              endIndent: 16,
-                            ); // You can customize the Divider's appearance if you want
+                            return CustomDivider(); // You can customize the Divider's appearance if you want
                           },
                           itemBuilder: (context, index) {
                             var character = filteredCharacters[index];
