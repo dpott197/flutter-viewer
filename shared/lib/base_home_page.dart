@@ -1,7 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:shared/custom_divider.dart';
+import 'package:shared/character_search_bar.dart';
+import 'package:shared/character_list.dart';
 
 import 'character.dart';
 import 'detail_screen.dart';
@@ -67,36 +68,21 @@ class _BaseHomePageState extends State<BaseHomePage> {
             // Phone layout
             return Column(
               children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: TextField(
-                    controller: _searchController,
-                    decoration: const InputDecoration(
-                      labelText: 'Search',
-                      border: OutlineInputBorder(),
-                    ),
-                    onChanged: (value) {
-                      setState(() {});
-                    },
-                  ),
+                CharacterSearchBar(
+                  controller: _searchController,
+                  onChanged: (value) {
+                    setState(() {});
+                  },
                 ),
                 Expanded(
-                  child: ListView.separated(
-                    itemCount: filteredCharacters.length,
-                    separatorBuilder: (BuildContext context, int index) {
-                      return const CustomDivider();
-                    },
-                    itemBuilder: (context, index) {
-                      return ListTile(
-                        title: Text(filteredCharacters[index].name),
-                        onTap: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => DetailScreen(
-                                  character: filteredCharacters[index]),
-                            ),
-                          );
-                        },
+                  child: CharacterList(
+                    characters: filteredCharacters,
+                    onTap: (character) {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              DetailScreen(character: character),
+                        ),
                       );
                     },
                   ),
@@ -111,39 +97,16 @@ class _BaseHomePageState extends State<BaseHomePage> {
                   flex: 1,
                   child: Column(
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: TextField(
-                          controller: _searchController,
-                          decoration: const InputDecoration(
-                            labelText: 'Search',
-                            border: OutlineInputBorder(),
-                          ),
-                          onChanged: (value) {
-                            setState(() {});
-                          },
-                        ),
+                      CharacterSearchBar(
+                        controller: _searchController,
+                        onChanged: (value) {
+                          setState(() {});
+                        },
                       ),
                       Expanded(
-                        child: ListView.separated(
-                          itemCount: filteredCharacters.length,
-                          separatorBuilder: (BuildContext context, int index) {
-                            return CustomDivider(); // You can customize the Divider's appearance if you want
-                          },
-                          itemBuilder: (context, index) {
-                            var character = filteredCharacters[index];
-                            return ListTile(
-                              tileColor: _selectedCharacter == character
-                                  ? (Theme.of(context).brightness ==
-                                          Brightness.dark
-                                      ? Colors.blue.shade900
-                                      : Colors
-                                          .blue.shade100) // Color when selected
-                                  : null, // Default color when not selected
-                              title: Text(character.name),
-                              onTap: () => _showDetails(character),
-                            );
-                          },
+                        child: CharacterList(
+                          characters: filteredCharacters,
+                          onTap: (character) => _showDetails(character),
                         ),
                       ),
                     ],
